@@ -1,0 +1,64 @@
+:host {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.welcome-container {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  
+}
+
+.text-container {
+  margin: 0 auto;
+  width: 60%;
+  opacity: 0;
+}
+
+.text-container h1 {
+  font-size: 50px;
+}
+
+.text-container hr {
+  color: #ced5e3;
+  background-color: #ced5e3;
+  border: none;
+  height: 2px;
+}
+
+.text-container p {
+  line-height: 1.6;
+  text-align: justify;
+}
+
+span.tag {
+  background-color: #3182ce;
+  color: white;
+  border-radius: 3px;
+  padding: 2px 8px;
+}
+
+ul {
+  color: #a1a9bb;
+}
+
+ul li {
+  margin-bottom: 10px;
+}
+
+a:link {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #105596;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #105596;
+  text-decoration: underline;
+}

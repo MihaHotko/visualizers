@@ -1,0 +1,29 @@
+.node {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-top: 1px solid #e5e9eb;
+  border-left: 1px solid #e5e9eb;
+  cursor: pointer;
+}
+
+.node-start {
+  background-color: #E81123;
+}
+
+.node-finish {
+  background-color: #8e44ad;
+}
+
+.node-visited {
+  background-color: #00B7C3;
+}
+
+.node-shortest-path {
+  background-color: #f1c40f;
+}
+
+
+.node-wall {
+  background-color: #2c3e50;
+}
+

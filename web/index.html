@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script>
+    // WARNING: DO NOT set the <base href> like this in production!
+    // Details: https://webdev.dartlang.org/angular/guide/router
+    (function () {
+      var m = document.location.pathname.match(/^(\/[-\w]+)+\/web($|\/)/);
+      document.write('<base href="' + (m ? m[0] : '/') + '" />');
+    }());
+  </script>
+
+  <title>Hello Angular</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/all.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <script defer src="anime.js"></script>
+  <script defer src="main.dart.js"></script>
+</head>
+
+<body ondragstart="return false;" ondrop="return false;">
+  <my-app>
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+  </my-app>
+</body>
+
+</html>

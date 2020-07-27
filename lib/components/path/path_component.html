@@ -1,0 +1,37 @@
+<div class="path-visualizer">
+  <div class="visualizer-container">
+    <h1>Pathfinding Visualizer</h1>
+    <hr>
+    <my-select (getSelectedIndex)="selectedIndex($event)" [inputList]="list"></my-select>
+    <button class="btn-primary">Visualize</button>
+    <button class="btn-secondary">Clear Board</button>
+    <button class="btn-secondary">Clear Path</button>
+
+   
+  </div>
+   <!-- VISUALIZER -->
+   <div class="visualize">
+    <div class="position">
+      <div class="legend">
+        <div class="block">
+          <div class="start"></div>
+          <span>Start</span>
+        </div>
+        <div class="block">
+          <div class="finish"></div>
+          <span>Finish</span>
+        </div>
+        <div class="block">
+          <div class="wall"></div>
+          <span>Wall</span>
+        </div>
+      </div>
+      <div class="node-container">
+        <node (mousedown)="mouseDown(node.row, node.col)" (mouseenter)="mouseEnter(node.row, node.col)"
+          (mouseup)="mouseUp()" *ngFor="let node of grid; trackBy: trackByNodeId" [row]="node.row.toString()"
+          [col]="node.col.toString()" [isFinish]="node.isFinish" [isStart]="node.isStart" [isWall]="node.isWall">
+        </node>
+      </div>
+    </div>
+  </div>
+</div>
