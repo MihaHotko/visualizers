@@ -1,4 +1,5 @@
 import 'package:angular/angular.dart';
+import 'package:visualizer/enums/node_types.dart';
 
 @Component(
     selector: 'node',
@@ -11,17 +12,28 @@ class NodeComponent {
   @Input()
   String col;
   @Input()
-  bool isStart;
-  @Input()
-  bool isFinish;
-  @Input()
-  bool isWall;
-  @Input()
-  bool mouseDown;
+  NodeType nodeType;
 
   String getExtraClassName() {
-    return isFinish
-        ? 'node-finish'
-        : isStart ? 'node-start' : isWall ? 'node-wall' : '';
+    switch (nodeType) {
+      case NodeType.start:
+        return 'node-start';
+        break;
+      case NodeType.startVisited:
+        return 'node-start';
+        break;
+      case NodeType.finish:
+        return 'node-finish';
+        break;
+      case NodeType.finishVisited:
+        return 'node-finish';
+        break;
+      case NodeType.wall:
+        return 'node-wall';
+        break;
+      default:
+        return '';
+        break;
+    }
   }
 }

@@ -1,1 +1,10 @@
-enum NodeType { wall, start, finish, visited, blank }
+enum NodeType {
+  wall,
+  start,
+  finish,
+  visited,
+  blank,
+  startVisited,
+  finishVisited,
+  shortestPath
+}

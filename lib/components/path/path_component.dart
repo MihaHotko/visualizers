@@ -7,6 +7,7 @@ import 'package:visualizer/algorithms/djikstra.dart';
 import 'package:visualizer/animation/anime.dart';
 import 'package:visualizer/components/path/Node/node_component.dart';
 import 'package:visualizer/components/select/select_component.dart';
+import 'package:visualizer/enums/node_types.dart';
 import 'package:visualizer/models/Grid.dart';
 import 'package:visualizer/models/Node.dart';
 
@@ -18,16 +19,11 @@ import 'package:visualizer/models/Node.dart';
 class PathComponent implements OnInit, AfterViewChecked {
   var grid = List<Node>();
   var isMouseDown = false;
-  var isDrag = false;
-  var lastVisitedRow = null;
-  var lastVisitedCol = null;
 
-  var holdingStart = false;
-  var lastVisitedStartRow = null;
-  var lastVisitedStartCol = null;
-  var lastVisitedFinishRow = null;
-  var lastVisitedFinishCol = null;
-  var holdingFinish = false;
+  var holdingSpecialNode = null;
+  var lastVisitedNodeRow = null;
+  var lastVisitedNodeCol = null;
+  var algorithmIndex = null;
 
   var list = List<String>();
 
@@ -43,72 +39,61 @@ class PathComponent implements OnInit, AfterViewChecked {
     return o.index;
   }
 
-  void mouseDown(num row, num col) {
-    isMouseDown = true;
-    if (Grid.isStart(grid, row, col)) {
-      holdingStart = true;
-      grid = Grid.toggleStart(grid, row, col);
-      lastVisitedStartCol = col;
-      lastVisitedStartRow = row;
-      return;
-    } else if (Grid.isFinish(grid, row, col)) {
-      holdingFinish = true;
-      grid = Grid.toggleFinish(grid, row, col);
-      lastVisitedFinishCol = col;
-      lastVisitedFinishRow = row;
+  void handleNodes(Node node) {
+    print(node);
+    if (holdingSpecialNode != null &&
+        node.type != NodeType.start &&
+        node.type != NodeType.finish) {
+      grid = Grid.toggleNode(grid, node.row, node.col, holdingSpecialNode);
+      holdingSpecialNode = null;
       return;
     }
-    if (!holdingStart && !holdingFinish) {
-      grid = Grid.toggleWall(grid, row, col);
-    } else if (holdingStart) {
-      grid = Grid.toggleStart(grid, row, col);
-      holdingStart = false;
-    } else if (holdingFinish) {
-      grid = Grid.toggleFinish(grid, row, col);
-      holdingFinish = false;
+
+    if (holdingSpecialNode == null) {
+      switch (node.type) {
+        case NodeType.start:
+          holdingSpecialNode = NodeType.start;
+          lastVisitedNodeRow = node.row;
+          lastVisitedNodeCol = node.col;
+          grid = Grid.toggleNode(grid, node.row, node.col, NodeType.blank);
+          break;
+        case NodeType.finish:
+          holdingSpecialNode = NodeType.finish;
+          lastVisitedNodeRow = node.row;
+          lastVisitedNodeCol = node.col;
+          grid = Grid.toggleNode(grid, node.row, node.col, NodeType.blank);
+          break;
+        default:
+          lastVisitedNodeRow = node.row;
+          lastVisitedNodeCol = node.col;
+          grid = Grid.toggleNode(
+              grid, node.row, node.col, NodeType.wall, NodeType.blank);
+          break;
+      }
     }
   }
 
+  void mouseDown(num row, num col) {
+    isMouseDown = true;
+    handleNodes(Grid.getNode(grid, row, col));
+  }
+
   void mouseEnter(num row, num col) {
-    if (!isMouseDown) {
-      return;
-    } else if (lastVisitedCol == col && lastVisitedRow == row) {
-      return;
-    }
-    isDrag = true;
-    lastVisitedCol = col;
-    lastVisitedRow = row;
-    if (!holdingStart && !holdingFinish) {
-      grid = Grid.toggleWall(grid, row, col);
-    } else if (holdingStart) {
-      grid = Grid.disableStart(grid, lastVisitedStartRow, lastVisitedStartCol);
-      grid = Grid.toggleStart(grid, row, col);
-      lastVisitedStartCol = col;
-      lastVisitedStartRow = row;
-    } else if (holdingFinish) {
-      grid =
-          Grid.disableFinish(grid, lastVisitedFinishRow, lastVisitedFinishCol);
-      grid = Grid.toggleFinish(grid, row, col);
-      lastVisitedFinishCol = col;
-      lastVisitedFinishRow = row;
-    }
+    if (!isMouseDown) return;
+    handleNodes(Grid.getNode(grid, row, col));
   }
 
   void mouseUp() {
     isMouseDown = false;
-    if (isDrag) {
-      holdingStart = false;
-      holdingFinish = false;
-      isDrag = false;
-    }
   }
 
   void visualizeDijkstra() {
-    List<Node> copyGrid = List<Node>.from(grid);
-    var startNode = copyGrid.firstWhere((element) => element.isStart);
-    var finishNode = copyGrid.firstWhere((element) => element.isFinish);
-    var visitedNodesInOrder =
-        Dijkstra.dijkstra(copyGrid, startNode, finishNode);
+    // List<Node> copyGrid = List<Node>.from(grid);
+    var startNode =
+        grid.firstWhere((element) => element.type == NodeType.start);
+    var finishNode =
+        grid.firstWhere((element) => element.type == NodeType.finish);
+    var visitedNodesInOrder = Dijkstra.dijkstra(grid, startNode, finishNode);
     var shortestPath = Dijkstra.getNodesInShortestPath(finishNode);
     animateDjikstra(visitedNodesInOrder, shortestPath);
   }
@@ -126,30 +111,76 @@ class PathComponent implements OnInit, AfterViewChecked {
             () => (animateShortestPath(shortestPath)));
       }
       Timer(Duration(milliseconds: 50),
-          () => (switchClass(visitedNodesInOrder[i])));
+          () => (toggleVisitedClass(visitedNodesInOrder[i])));
     }
   }
 
-  void switchClass(Node node) {
-    if (!node.isStart && !node.isFinish)
-      querySelector('#node-${node.row}-${node.col}').className +=
-          ' node-visited';
+  void toggleVisitedClass(Node node) {
+    if (node.type != NodeType.startVisited &&
+        node.type != NodeType.finishVisited) {
+      var classes = querySelector('#node-${node.row}-${node.col}').classes;
+      if (classes.contains('node-visited')) {
+        classes.remove('node-visited');
+      } else {
+        classes.add('node-visited');
+      }
+    }
   }
 
-  void switchClassShortest(Node node) {
-    if (!node.isStart && !node.isFinish)
-      querySelector('#node-${node.row}-${node.col}').className +=
-          'node node-shortest-path';
+  void toggleShortestPathClass(Node node) {
+    if (node.type != NodeType.startVisited &&
+        node.type != NodeType.finishVisited) {
+      var classes = querySelector('#node-${node.row}-${node.col}').classes;
+      if (classes.contains('node-shortest-path')) {
+        classes.remove('node-shortest-path');
+      } else {
+        classes.add('node-shortest-path');
+      }
+      if (classes.contains('node-visited')) {
+        classes.remove('node-visited');
+      }
+    }
   }
 
   animateShortestPath(List<Node> shortestPath) {
     for (int i = 0; i < shortestPath.length; i++) {
       Node node = shortestPath[i];
-      Timer(Duration(milliseconds: 10), () => (switchClassShortest(node)));
+      Timer(Duration(milliseconds: 10), () => (toggleShortestPathClass(node)));
     }
   }
 
+  void resetBoard() {
+    for (Node n in grid) {
+      switch (n.type) {
+        case NodeType.visited:
+          toggleVisitedClass(n);
+          break;
+        case NodeType.shortestPath:
+          toggleShortestPathClass(n);
+          break;
+        default:
+          break;
+      }
+    }
+    grid = Grid.getInitialGrid();
+  }
+
   void selectedIndex(num i) {
-    print(i);
+    algorithmIndex = i;
+  }
+
+  void visualizeAlgorithm() {
+    if (algorithmIndex == null) return;
+    visualize(Algorithm.values[algorithmIndex]);
+  }
+
+  void visualize(Algorithm valu) {
+    switch (valu) {
+      case Algorithm.Dijkstra:
+        visualizeDijkstra();
+        break;
+      default:
+        break;
+    }
   }
 }

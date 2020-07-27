@@ -1,6 +1,7 @@
 import 'dart:html';
 
 import 'package:visualizer/Constants/Constants.dart';
+import 'package:visualizer/enums/node_types.dart';
 import 'package:visualizer/models/Grid.dart';
 import 'package:visualizer/models/Node.dart';
 
@@ -9,6 +10,7 @@ class Dijkstra {
     List<Node> visitedNodesInOrder = [];
     startNode.distance = 0;
     var unvisitedNodes = List<Node>.from(grid);
+    print(startNode);
     while (unvisitedNodes.length > 0) {
       unvisitedNodes
           .sort((nodeA, nodeB) => nodeA.distance.compareTo(nodeB.distance));
@@ -16,12 +18,23 @@ class Dijkstra {
       var closestNode = unvisitedNodes.first;
       unvisitedNodes.removeAt(0);
 
-      if (closestNode.isWall) continue;
+      if (closestNode.type == NodeType.wall) continue;
 
       if (closestNode.distance == double.infinity) {
         return visitedNodesInOrder;
       }
-      closestNode.isVisited = true;
+
+      switch (closestNode.type) {
+        case NodeType.start:
+          closestNode.type = NodeType.startVisited;
+          break;
+        case NodeType.finish:
+          closestNode.type = NodeType.finishVisited;
+          break;
+        default:
+          closestNode.type = NodeType.visited;
+          break;
+      }
       visitedNodesInOrder.add(closestNode);
       if (closestNode == finishNode) return visitedNodesInOrder;
       updateVisitedNeighbors(closestNode, grid);
@@ -59,7 +72,9 @@ class Dijkstra {
     }
     List<Node> returnList = [];
     for (Node i in neigbours) {
-      if (!i.isVisited) {
+      if (i.type != NodeType.visited &&
+          i.type != NodeType.startVisited &&
+          i.type != NodeType.finishVisited) {
         returnList.add(i);
       }
     }
@@ -72,6 +87,10 @@ class Dijkstra {
     var currentNode = finishNode;
     while (currentNode != null) {
       shortestPath.insert(0, currentNode);
+      if (currentNode.type != NodeType.finishVisited &&
+          currentNode.type != NodeType.startVisited) {
+        currentNode.type = NodeType.shortestPath;
+      }
       currentNode = currentNode.previousNode;
     }
     return shortestPath;

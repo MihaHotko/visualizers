@@ -3,9 +3,9 @@
     <h1>Pathfinding Visualizer</h1>
     <hr>
     <my-select (getSelectedIndex)="selectedIndex($event)" [inputList]="list"></my-select>
-    <button class="btn-primary">Visualize</button>
-    <button class="btn-secondary">Clear Board</button>
-    <button class="btn-secondary">Clear Path</button>
+    <button class="btn-primary" (click)="visualizeAlgorithm">Visualize</button>
+    <button class="btn-secondary" (click)="resetBoard">Reset Board</button>
+    <!-- <button class="btn-secondary" (click)="clearPath">Clear Path</button> -->
 
    
   </div>
@@ -29,7 +29,7 @@
       <div class="node-container">
         <node (mousedown)="mouseDown(node.row, node.col)" (mouseenter)="mouseEnter(node.row, node.col)"
           (mouseup)="mouseUp()" *ngFor="let node of grid; trackBy: trackByNodeId" [row]="node.row.toString()"
-          [col]="node.col.toString()" [isFinish]="node.isFinish" [isStart]="node.isStart" [isWall]="node.isWall">
+          [col]="node.col.toString()" [nodeType]="node.type">
         </node>
       </div>
     </div>
