@@ -1,9 +1,7 @@
 import 'dart:html';
 
-import 'package:visualizer/Constants/Constants.dart';
 import 'package:visualizer/algorithms/algorithm.dart';
 import 'package:visualizer/enums/node_types.dart';
-import 'package:visualizer/models/Grid.dart';
 import 'package:visualizer/models/Node.dart';
 
 class Dijkstra extends Algorithm {
