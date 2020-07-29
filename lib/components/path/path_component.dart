@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:angular/angular.dart';
+import 'package:visualizer/algorithms/astar.dart';
 import 'package:visualizer/enums/algorithms.dart';
 import 'package:visualizer/algorithms/djikstra.dart';
 import 'package:visualizer/animation/anime.dart';
@@ -25,6 +26,9 @@ class PathComponent implements OnInit, AfterViewChecked {
   var lastVisitedNodeCol = null;
   var algorithmIndex = null;
 
+  var visitedNodes = 0;
+  var shortestPathNumber = 0;
+
   var list = List<String>();
 
   @override
@@ -40,7 +44,6 @@ class PathComponent implements OnInit, AfterViewChecked {
   }
 
   void handleNodes(Node node) {
-    print(node);
     if (holdingSpecialNode != null &&
         node.type != NodeType.start &&
         node.type != NodeType.finish) {
@@ -95,7 +98,21 @@ class PathComponent implements OnInit, AfterViewChecked {
         grid.firstWhere((element) => element.type == NodeType.finish);
     var visitedNodesInOrder = Dijkstra.dijkstra(grid, startNode, finishNode);
     var shortestPath = Dijkstra.getNodesInShortestPath(finishNode);
+    visitedNodes = visitedNodesInOrder.length;
+    shortestPathNumber = shortestPath.length;
     animateDjikstra(visitedNodesInOrder, shortestPath);
+  }
+
+  void visualizeAStar() {
+    var startNode =
+        grid.firstWhere((element) => element.type == NodeType.start);
+    var finishNode =
+        grid.firstWhere((element) => element.type == NodeType.finish);
+    var visitedNodesInOrder = AStar.astar(grid, startNode, finishNode);
+    var shortestPath = AStar.getNodesInShortestPath(finishNode);
+    visitedNodes = visitedNodesInOrder.length;
+    shortestPathNumber = shortestPath.length;
+    animateAstar(visitedNodesInOrder, shortestPath);
   }
 
   @override
@@ -105,6 +122,17 @@ class PathComponent implements OnInit, AfterViewChecked {
 
   void animateDjikstra(
       List<Node> visitedNodesInOrder, List<Node> shortestPath) {
+    for (int i = 0; i < visitedNodesInOrder.length; i++) {
+      if (i == visitedNodesInOrder.length - 1) {
+        Timer(Duration(milliseconds: 50),
+            () => (animateShortestPath(shortestPath)));
+      }
+      Timer(Duration(milliseconds: 50),
+          () => (toggleVisitedClass(visitedNodesInOrder[i])));
+    }
+  }
+
+  void animateAstar(List<Node> visitedNodesInOrder, List<Node> shortestPath) {
     for (int i = 0; i < visitedNodesInOrder.length; i++) {
       if (i == visitedNodesInOrder.length - 1) {
         Timer(Duration(milliseconds: 50),
@@ -178,6 +206,9 @@ class PathComponent implements OnInit, AfterViewChecked {
     switch (valu) {
       case Algorithm.Dijkstra:
         visualizeDijkstra();
+        break;
+      case Algorithm.AStar:
+        visualizeAStar();
         break;
       default:
         break;

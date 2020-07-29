@@ -25,6 +25,12 @@
           <div class="wall"></div>
           <span>Wall</span>
         </div>
+        <div class="block">
+          <span>Visited Nodes: {{visitedNodes}}</span>
+        </div>
+        <div class="block">
+          <span>Shortest Path Length: {{shortestPathNumber}}</span>
+        </div>
       </div>
       <div class="node-container">
         <node (mousedown)="mouseDown(node.row, node.col)" (mouseenter)="mouseEnter(node.row, node.col)"
