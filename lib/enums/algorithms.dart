@@ -1,14 +1,14 @@
 import 'package:visualizer/algorithms/djikstra.dart';
 
-enum Algorithm { Dijkstra, AStar }
+enum AlgorithmEnum { Dijkstra, AStar }
 
 class AlgorithmsHelper {
-  static String getValue(Algorithm algorithms) {
+  static String getValue(AlgorithmEnum algorithms) {
     switch (algorithms) {
-      case Algorithm.Dijkstra:
+      case AlgorithmEnum.Dijkstra:
         return "Dijkstra's algorithm";
         break;
-      case Algorithm.AStar:
+      case AlgorithmEnum.AStar:
         return "A* algorithm";
         break;
     }

@@ -1,11 +1,13 @@
 import 'package:visualizer/Constants/Constants.dart';
+import 'package:visualizer/algorithms/algorithm.dart';
 import 'package:visualizer/enums/node_types.dart';
 import 'package:visualizer/models/Node.dart';
 
-class AStar {
+class AStar extends Algorithm {
   static var f_cost = Map<Node, num>();
 
-  static List<Node> astar(List<Node> grid, Node startNode, Node finishNode) {
+  @override
+  List<Node> algorithm(List<Node> grid, Node startNode, Node finishNode) {
     var open = Map<Node, num>();
     var closed = List<Node>();
 
@@ -54,45 +56,12 @@ class AStar {
     return closed;
   }
 
-  static List<Node> getUnvisitedNeighbours(Node a, List<Node> grid) {
-    var neigbours = [];
-    var col = a.col;
-    var row = a.row;
-
-    if (row > 1) {
-      num index = ((row - 1) * Constants.ROWS + (col - 1)) - Constants.ROWS;
-      neigbours.add(grid[index]);
-    }
-    if (row < Constants.COLS) {
-      num index = ((row - 1) * Constants.ROWS + (col - 1)) + Constants.ROWS;
-      neigbours.add(grid[index]);
-    }
-    if (col > 1) {
-      num index = ((row - 1) * Constants.ROWS + (col - 1)) - 1;
-      neigbours.add(grid[index]);
-    }
-    if (col < Constants.ROWS) {
-      num index = ((row - 1) * Constants.ROWS + (col - 1)) + 1;
-      neigbours.add(grid[index]);
-    }
-    List<Node> returnList = [];
-    for (Node i in neigbours) {
-      if (i.type != NodeType.visited &&
-          i.type != NodeType.startVisited &&
-          i.type != NodeType.finishVisited) {
-        returnList.add(i);
-      }
-    }
-    // print(returnList);
-    return returnList;
-  }
-
-  static num heuristic(Node a, Node b) {
+  num heuristic(Node a, Node b) {
     // Manhattan distance heuristic
     return (a.col - b.col).abs() + (a.row - b.row).abs();
   }
 
-  static Node getMinFromOpen(Map<Node, num> map) {
+  Node getMinFromOpen(Map<Node, num> map) {
     Node minKey = null;
     num minValue = double.infinity;
     for (Node key in map.keys) {
@@ -103,19 +72,5 @@ class AStar {
       }
     }
     return minKey;
-  }
-
-  static List<Node> getNodesInShortestPath(Node finishNode) {
-    List<Node> shortestPath = [];
-    var currentNode = finishNode;
-    while (currentNode != null) {
-      shortestPath.insert(0, currentNode);
-      if (currentNode.type != NodeType.finishVisited &&
-          currentNode.type != NodeType.startVisited) {
-        currentNode.type = NodeType.shortestPath;
-      }
-      currentNode = currentNode.previousNode;
-    }
-    return shortestPath;
   }
 }

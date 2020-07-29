@@ -31,13 +31,39 @@ class PathComponent implements OnInit, AfterViewChecked {
 
   var list = List<String>();
 
+  var aStar = AStar();
+  var dijkstra = Dijkstra();
+
+  // LIFECYCLE HOOKS
   @override
   void ngOnInit() {
     grid = Grid.getInitialGrid();
-    for (var t in Algorithm.values) {
+    for (var t in AlgorithmEnum.values) {
       list.add(AlgorithmsHelper.getValue(t));
     }
   }
+
+  @override
+  void ngAfterViewChecked() {
+    anime(AnimeOptions(targets: '.path-visualizer', opacity: 1, duration: 900));
+  }
+
+  // EVENTS
+  void mouseDown(num row, num col) {
+    isMouseDown = true;
+    handleNodes(Grid.getNode(grid, row, col));
+  }
+
+  void mouseEnter(num row, num col) {
+    if (!isMouseDown) return;
+    handleNodes(Grid.getNode(grid, row, col));
+  }
+
+  void mouseUp() {
+    isMouseDown = false;
+  }
+
+  // METHODS
 
   Object trackByNodeId(_, dynamic o) {
     return o.index;
@@ -76,63 +102,31 @@ class PathComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  void mouseDown(num row, num col) {
-    isMouseDown = true;
-    handleNodes(Grid.getNode(grid, row, col));
-  }
-
-  void mouseEnter(num row, num col) {
-    if (!isMouseDown) return;
-    handleNodes(Grid.getNode(grid, row, col));
-  }
-
-  void mouseUp() {
-    isMouseDown = false;
-  }
-
-  void visualizeDijkstra() {
-    // List<Node> copyGrid = List<Node>.from(grid);
+  void visualizeAlgo(AlgorithmEnum type) {
     var startNode =
         grid.firstWhere((element) => element.type == NodeType.start);
     var finishNode =
         grid.firstWhere((element) => element.type == NodeType.finish);
-    var visitedNodesInOrder = Dijkstra.dijkstra(grid, startNode, finishNode);
-    var shortestPath = Dijkstra.getNodesInShortestPath(finishNode);
-    visitedNodes = visitedNodesInOrder.length;
-    shortestPathNumber = shortestPath.length;
-    animateDjikstra(visitedNodesInOrder, shortestPath);
-  }
+    var visitedNodesInOrder = null;
+    var shortestPath = null;
 
-  void visualizeAStar() {
-    var startNode =
-        grid.firstWhere((element) => element.type == NodeType.start);
-    var finishNode =
-        grid.firstWhere((element) => element.type == NodeType.finish);
-    var visitedNodesInOrder = AStar.astar(grid, startNode, finishNode);
-    var shortestPath = AStar.getNodesInShortestPath(finishNode);
-    visitedNodes = visitedNodesInOrder.length;
-    shortestPathNumber = shortestPath.length;
-    animateAstar(visitedNodesInOrder, shortestPath);
-  }
-
-  @override
-  void ngAfterViewChecked() {
-    anime(AnimeOptions(targets: '.path-visualizer', opacity: 1, duration: 900));
-  }
-
-  void animateDjikstra(
-      List<Node> visitedNodesInOrder, List<Node> shortestPath) {
-    for (int i = 0; i < visitedNodesInOrder.length; i++) {
-      if (i == visitedNodesInOrder.length - 1) {
-        Timer(Duration(milliseconds: 50),
-            () => (animateShortestPath(shortestPath)));
-      }
-      Timer(Duration(milliseconds: 50),
-          () => (toggleVisitedClass(visitedNodesInOrder[i])));
+    switch (type) {
+      case AlgorithmEnum.Dijkstra:
+        visitedNodesInOrder = dijkstra.algorithm(grid, startNode, finishNode);
+        shortestPath = dijkstra.getNodesInShortestPath(finishNode);
+        break;
+      case AlgorithmEnum.AStar:
+        visitedNodesInOrder = aStar.algorithm(grid, startNode, finishNode);
+        shortestPath = aStar.getNodesInShortestPath(finishNode);
+        break;
     }
+    visitedNodes = visitedNodesInOrder.length;
+    shortestPathNumber = shortestPath.length;
+    animateAlgorithm(visitedNodesInOrder, shortestPath);
   }
 
-  void animateAstar(List<Node> visitedNodesInOrder, List<Node> shortestPath) {
+  void animateAlgorithm(
+      List<Node> visitedNodesInOrder, List<Node> shortestPath) {
     for (int i = 0; i < visitedNodesInOrder.length; i++) {
       if (i == visitedNodesInOrder.length - 1) {
         Timer(Duration(milliseconds: 50),
@@ -190,6 +184,8 @@ class PathComponent implements OnInit, AfterViewChecked {
           break;
       }
     }
+    visitedNodes = 0;
+    shortestPathNumber = 0;
     grid = Grid.getInitialGrid();
   }
 
@@ -199,19 +195,10 @@ class PathComponent implements OnInit, AfterViewChecked {
 
   void visualizeAlgorithm() {
     if (algorithmIndex == null) return;
-    visualize(Algorithm.values[algorithmIndex]);
+    visualize(AlgorithmEnum.values[algorithmIndex]);
   }
 
-  void visualize(Algorithm valu) {
-    switch (valu) {
-      case Algorithm.Dijkstra:
-        visualizeDijkstra();
-        break;
-      case Algorithm.AStar:
-        visualizeAStar();
-        break;
-      default:
-        break;
-    }
+  void visualize(AlgorithmEnum valu) {
+    visualizeAlgo(valu);
   }
 }
