@@ -4,7 +4,7 @@
     <span class="chevron-select fas fa-chevron-up"></span>
   </div>
   <div class="option-container">
-    <div (click)="optionClick(i)" class="option" *ngFor="let algo of inputList; let i = index">
+    <div (click)="optionClick($event, i)" class="option" *ngFor="let algo of inputList; let i = index">
       <input type="radio" name="algo" id="algo">
       <label for="algo">{{algo}}</label>
     </div>

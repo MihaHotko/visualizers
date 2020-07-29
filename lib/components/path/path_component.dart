@@ -3,6 +3,7 @@ import 'dart:html';
 
 import 'package:angular/angular.dart';
 import 'package:visualizer/algorithms/astar.dart';
+import 'package:visualizer/algorithms/dfs.dart';
 import 'package:visualizer/enums/algorithms.dart';
 import 'package:visualizer/algorithms/djikstra.dart';
 import 'package:visualizer/animation/anime.dart';
@@ -26,6 +27,8 @@ class PathComponent implements OnInit, AfterViewChecked {
   var lastVisitedNodeCol = null;
   var algorithmIndex = null;
 
+  var hasStarted = false;
+
   var visitedNodes = 0;
   var shortestPathNumber = 0;
 
@@ -33,6 +36,7 @@ class PathComponent implements OnInit, AfterViewChecked {
 
   var aStar = AStar();
   var dijkstra = Dijkstra();
+  var dfs = DFS();
 
   // LIFECYCLE HOOKS
   @override
@@ -114,15 +118,21 @@ class PathComponent implements OnInit, AfterViewChecked {
       case AlgorithmEnum.Dijkstra:
         visitedNodesInOrder = dijkstra.algorithm(grid, startNode, finishNode);
         shortestPath = dijkstra.getNodesInShortestPath(finishNode);
+        animateAlgorithm(visitedNodesInOrder, shortestPath);
         break;
       case AlgorithmEnum.AStar:
         visitedNodesInOrder = aStar.algorithm(grid, startNode, finishNode);
         shortestPath = aStar.getNodesInShortestPath(finishNode);
+        animateAlgorithm(visitedNodesInOrder, shortestPath);
+        break;
+      case AlgorithmEnum.DFS:
+        visitedNodesInOrder = dfs.algorithm(grid, startNode, finishNode);
+        shortestPath = dfs.getNodesInShortestPath(finishNode);
+        animateAlgorithm(visitedNodesInOrder, shortestPath);
         break;
     }
     visitedNodes = visitedNodesInOrder.length;
     shortestPathNumber = shortestPath.length;
-    animateAlgorithm(visitedNodesInOrder, shortestPath);
   }
 
   void animateAlgorithm(
@@ -135,6 +145,7 @@ class PathComponent implements OnInit, AfterViewChecked {
       Timer(Duration(milliseconds: 50),
           () => (toggleVisitedClass(visitedNodesInOrder[i])));
     }
+    hasStarted = false;
   }
 
   void toggleVisitedClass(Node node) {
@@ -199,6 +210,7 @@ class PathComponent implements OnInit, AfterViewChecked {
   }
 
   void visualize(AlgorithmEnum valu) {
+    //hasStarted = true;
     visualizeAlgo(valu);
   }
 }

@@ -10,7 +10,7 @@ import 'package:angular/angular.dart';
     styleUrls: ['select_component.css'])
 class SelectComponent {
   @Input()
-  var inputList;
+  List<String> inputList;
   @Output()
   Stream<num> get getSelectedIndex => _getSelectedIndex.stream;
 
@@ -27,7 +27,8 @@ class SelectComponent {
         : icon.classes.remove('active');
   }
 
-  void optionClick(num i) {
+  void optionClick(dynamic event, num i) {
+    event.preventDefault();
     var selectText = querySelector('.select-category');
     selectText.text = inputList[i];
     toggleSelect();
