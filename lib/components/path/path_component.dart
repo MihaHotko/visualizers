@@ -27,6 +27,8 @@ class PathComponent implements OnInit, AfterViewChecked {
   var lastVisitedNodeCol = null;
   var algorithmIndex = null;
 
+  var previousAnimatedNode = null;
+
   var hasStarted = false;
 
   var visitedNodes = 0;
@@ -139,10 +141,10 @@ class PathComponent implements OnInit, AfterViewChecked {
       List<Node> visitedNodesInOrder, List<Node> shortestPath) {
     for (int i = 0; i < visitedNodesInOrder.length; i++) {
       if (i == visitedNodesInOrder.length - 1) {
-        Timer(Duration(milliseconds: 50),
+        Timer(Duration(milliseconds: 100),
             () => (animateShortestPath(shortestPath)));
       }
-      Timer(Duration(milliseconds: 50),
+      Timer(Duration(milliseconds: 100),
           () => (toggleVisitedClass(visitedNodesInOrder[i])));
     }
     hasStarted = false;
@@ -152,12 +154,25 @@ class PathComponent implements OnInit, AfterViewChecked {
     if (node.type != NodeType.startVisited &&
         node.type != NodeType.finishVisited) {
       var classes = querySelector('#node-${node.row}-${node.col}').classes;
-      if (classes.contains('node-visited')) {
-        classes.remove('node-visited');
-      } else {
+      if (previousAnimatedNode != null) {
+        var previousclasses = querySelector(
+                '#node-${previousAnimatedNode.row}-${previousAnimatedNode.col}')
+            .classes;
+        previousclasses.remove('node-current-visited');
         classes.add('node-visited');
       }
+      if (!classes.contains('node-current-visited')) {
+        classes.add('node-current-visited');
+      }
     }
+    if (node.type == NodeType.finishVisited) {
+      var previousclasses = querySelector(
+              '#node-${previousAnimatedNode.row}-${previousAnimatedNode.col}')
+          .classes;
+      previousclasses.remove('node-current-visited');
+      previousclasses.add('node-visited');
+    }
+    previousAnimatedNode = node;
   }
 
   void toggleShortestPathClass(Node node) {
@@ -184,12 +199,14 @@ class PathComponent implements OnInit, AfterViewChecked {
 
   void resetBoard() {
     for (Node n in grid) {
+      var classes = querySelector('#node-${n.row}-${n.col}').classes;
       switch (n.type) {
         case NodeType.visited:
-          toggleVisitedClass(n);
+          classes.remove('node-visited');
           break;
         case NodeType.shortestPath:
-          toggleShortestPathClass(n);
+          classes.remove('node-shortest-path');
+          //toggleShortestPathClass(n);
           break;
         default:
           break;

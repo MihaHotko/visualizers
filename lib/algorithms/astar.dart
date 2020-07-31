@@ -21,6 +21,7 @@ class AStar extends Algorithm {
 
       if (currentNode.type == NodeType.finish) {
         currentNode.type = NodeType.finishVisited;
+        closed.add(currentNode);
         return closed;
       }
       open.remove(currentNode);
@@ -31,6 +32,9 @@ class AStar extends Algorithm {
       switch (currentNode.type) {
         case NodeType.start:
           currentNode.type = NodeType.startVisited;
+          break;
+        case NodeType.finish:
+          currentNode.type = NodeType.finishVisited;
           break;
         default:
           currentNode.type = NodeType.visited;

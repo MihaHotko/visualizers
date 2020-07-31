@@ -38,6 +38,7 @@ class Dijkstra extends Algorithm {
       if (closestNode == finishNode) return visitedNodesInOrder;
       updateVisitedNeighbors(closestNode, grid);
     }
+    return null;
   }
 
   void updateVisitedNeighbors(Node a, List<Node> grid) {
