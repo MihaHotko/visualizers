@@ -93,6 +93,25 @@ hr {
   color: white;
 }
 
+.btn-primary:disabled {
+  color: #95a5a6;
+  border: 2px solid #95a5a6;
+}
+
+.btn-primary:disabled:hover {
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.btn-secondary:disabled {
+  color: #95a5a6;
+}
+
+.btn-secondary:disabled:hover {
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
 .btn-secondary {
   border: none;
   padding: 0;

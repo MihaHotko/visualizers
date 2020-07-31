@@ -1,4 +1,4 @@
-enum AlgorithmEnum { Dijkstra, AStar, DFS }
+enum AlgorithmEnum { Dijkstra, AStar, DFS, BFS }
 
 class AlgorithmsHelper {
   static String getValue(AlgorithmEnum algorithms) {
@@ -11,6 +11,9 @@ class AlgorithmsHelper {
         break;
       case AlgorithmEnum.DFS:
         return "Depth First Search";
+        break;
+      case AlgorithmEnum.BFS:
+        return "Breadth First Search";
         break;
       default:
         return '';

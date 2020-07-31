@@ -2,14 +2,16 @@ import 'package:visualizer/algorithms/algorithm.dart';
 import 'package:visualizer/enums/node_types.dart';
 import 'package:visualizer/models/Node.dart';
 
-class DFS extends Algorithm {
+class BFS extends Algorithm {
   @override
   List<Node> algorithm(List<Node> grid, Node startNode, Node finishNode) {
-    List<Node> stack = [];
-    List<Node> visitedInOrder = [];
-    stack.add(startNode);
-    while (stack.isNotEmpty) {
-      var currentNode = stack.removeLast();
+    List<Node> queue = List<Node>();
+    List<Node> visitedNodes = List<Node>();
+
+    queue.add(startNode);
+
+    while (queue.isNotEmpty) {
+      var currentNode = queue.removeAt(0);
 
       if (currentNode.type == NodeType.wall) {
         continue;
@@ -27,19 +29,24 @@ class DFS extends Algorithm {
           break;
       }
 
-      visitedInOrder.add(currentNode);
+      visitedNodes.add(currentNode);
 
       var neighbours = getUnvisitedNeighbours(currentNode, grid);
-      for (Node neigbour in neighbours) {
-        stack.add(neigbour);
-        neigbour.previousNode = currentNode;
-        if (neigbour.type == NodeType.finish) {
-          neigbour.type = NodeType.finishVisited;
-          visitedInOrder.add(neigbour);
-          return visitedInOrder;
+      for (Node n in neighbours) {
+        if (n.type == NodeType.wall) {
+          continue;
         }
+        queue.add(n);
+        n.previousNode = currentNode;
+        if (n.type == NodeType.finish) {
+          n.type = NodeType.finishVisited;
+          visitedNodes.add(n);
+          return visitedNodes;
+        }
+        n.type = NodeType.visited;
       }
     }
-    return visitedInOrder;
+
+    return visitedNodes;
   }
 }

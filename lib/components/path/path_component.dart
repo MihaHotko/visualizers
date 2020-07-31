@@ -3,6 +3,7 @@ import 'dart:html';
 
 import 'package:angular/angular.dart';
 import 'package:visualizer/algorithms/astar.dart';
+import 'package:visualizer/algorithms/bfs.dart';
 import 'package:visualizer/algorithms/dfs.dart';
 import 'package:visualizer/enums/algorithms.dart';
 import 'package:visualizer/algorithms/djikstra.dart';
@@ -39,6 +40,7 @@ class PathComponent implements OnInit, AfterViewChecked {
   var aStar = AStar();
   var dijkstra = Dijkstra();
   var dfs = DFS();
+  var bfs = BFS();
 
   // LIFECYCLE HOOKS
   @override
@@ -132,6 +134,11 @@ class PathComponent implements OnInit, AfterViewChecked {
         shortestPath = dfs.getNodesInShortestPath(finishNode);
         animateAlgorithm(visitedNodesInOrder, shortestPath);
         break;
+      case AlgorithmEnum.BFS:
+        visitedNodesInOrder = bfs.algorithm(grid, startNode, finishNode);
+        shortestPath = bfs.getNodesInShortestPath(finishNode);
+        animateAlgorithm(visitedNodesInOrder, shortestPath);
+        break;
     }
     visitedNodes = visitedNodesInOrder.length;
     shortestPathNumber = shortestPath.length;
@@ -195,6 +202,7 @@ class PathComponent implements OnInit, AfterViewChecked {
       Node node = shortestPath[i];
       Timer(Duration(milliseconds: 10), () => (toggleShortestPathClass(node)));
     }
+    disableButton('.btn-secondary', false);
   }
 
   void resetBoard() {
@@ -206,7 +214,6 @@ class PathComponent implements OnInit, AfterViewChecked {
           break;
         case NodeType.shortestPath:
           classes.remove('node-shortest-path');
-          //toggleShortestPathClass(n);
           break;
         default:
           break;
@@ -215,6 +222,7 @@ class PathComponent implements OnInit, AfterViewChecked {
     visitedNodes = 0;
     shortestPathNumber = 0;
     grid = Grid.getInitialGrid();
+    disableButton('.btn-primary', false);
   }
 
   void selectedIndex(num i) {
@@ -227,7 +235,14 @@ class PathComponent implements OnInit, AfterViewChecked {
   }
 
   void visualize(AlgorithmEnum valu) {
-    //hasStarted = true;
+    disableButton('.btn-primary', true);
+    disableButton('.btn-secondary', true);
     visualizeAlgo(valu);
+  }
+
+  void disableButton(String clas, bool isDisabled) {
+    var btn = querySelector(clas);
+    if (isDisabled) btn.setAttribute('disabled', isDisabled.toString());
+    if (!isDisabled) btn.removeAttribute('disabled');
   }
 }
