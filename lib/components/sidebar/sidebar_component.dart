@@ -12,8 +12,10 @@ import 'package:visualizer/models/SidebarContent.dart';
     templateUrl: 'sidebar_component.html',
     styleUrls: ['sidebar_component.css'],
     directives: [coreDirectives, routerDirectives])
-class SidebarComponent implements AfterViewChecked {
+class SidebarComponent implements AfterViewChecked, OnDestroy {
   List<SidebarContent> list = SidebarArray.arr();
+  //so that the animation for reload does not fire multiple times
+  var hasBeenClicked = false;
 
   void sidebarClick(dynamic event) {
     animate(event);
@@ -22,9 +24,15 @@ class SidebarComponent implements AfterViewChecked {
   @override
   void ngAfterViewChecked() {
     var t = querySelector('.block.active');
-    if (t != null) {
+    if (!hasBeenClicked && t != null) {
       animate(int.parse(t.id));
+      hasBeenClicked = true;
     }
+  }
+
+  @override
+  void ngOnDestroy() {
+    hasBeenClicked = false;
   }
 
   void animate(num order) {
